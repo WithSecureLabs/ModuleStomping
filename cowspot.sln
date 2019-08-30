@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inject", "inject\inject.vcxproj", "{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inject_simple", "inject_simple\inject_simple.vcxproj", "{5C90611E-0874-4618-9C3D-B1385C83FBDF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "injectionUtils", "injectionUtils\injectionUtils.vcxproj", "{171D6509-8BA1-489E-BB38-B3DB2C9B53BB}"
@@ -15,6 +17,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Debug|x64.ActiveCfg = Debug|x64
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Debug|x64.Build.0 = Debug|x64
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Debug|x86.ActiveCfg = Debug|Win32
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Debug|x86.Build.0 = Debug|Win32
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Release|x64.ActiveCfg = Release|x64
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Release|x64.Build.0 = Release|x64
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Release|x86.ActiveCfg = Release|Win32
+		{35928C18-5D5D-4BC6-88CE-E5BBE00C0446}.Release|x86.Build.0 = Release|Win32
 		{5C90611E-0874-4618-9C3D-B1385C83FBDF}.Debug|x64.ActiveCfg = Debug|x64
 		{5C90611E-0874-4618-9C3D-B1385C83FBDF}.Debug|x64.Build.0 = Debug|x64
 		{5C90611E-0874-4618-9C3D-B1385C83FBDF}.Debug|x86.ActiveCfg = Debug|Win32
