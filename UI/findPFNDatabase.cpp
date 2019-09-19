@@ -24,7 +24,7 @@ unsigned long long findPFNDatabase()
 	wchar_t curPath[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, curPath);
 	std::wstring symPath(L"");
-	symPath.append(L"symsrv*symsrv.dll*");
+	symPath.append(L"srv*");
 	symPath.append(curPath);
 	symPath.append(L"*http://msdl.microsoft.com/download/symbols");
 
@@ -40,13 +40,27 @@ unsigned long long findPFNDatabase()
 		return false;
 	}
 
+	HMODULE symSrv = LoadLibrary(L"symsrv.dll");
+	if (symSrv == NULL)
+	{
+		printf("symsrv.dll not found. Please install a copy in your PATH.\n");
+		return false;
+	}
+
 	printf("Loading PDBs..\n");
 	hr = g_pDiaDataSource->loadDataForExe(exeFilename.c_str(), symPath.c_str(), NULL);
-	if (FAILED(hr)) 
+	if (FAILED(hr))
 	{
-		printf("loadDataForExe failed for file '%ls' - HRESULT is %08X\n", exeFilename.c_str(), hr);
 		if (hr == E_PDB_NOT_FOUND)
-			printf("This is E_PDB_NOT_FOUND. Check that you have internet connectivity, and the correct symbol server configured.\n");
+		{
+			printf("DIA returned E_PDB_NOT_FOUND. Check that you have internet connectivity, and the correct symbol server configured.\n");
+			printf("The symbol path used was '%S'.\n", symPath.c_str());
+		}
+		else
+		{
+			printf("loadDataForExe failed for file '%ls' - HRESULT is %08X\n", exeFilename.c_str(), hr);
+		}
+
 		return false;
 	}
 	printf("Loading PDBs complete.\n");

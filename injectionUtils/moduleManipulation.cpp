@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <iostream>
 
 #include "moduleManipulation.h"
 #include "public.h"

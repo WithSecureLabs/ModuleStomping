@@ -2,7 +2,8 @@
 #include <windows.h>
 #include <psapi.h>
 #include <tlhelp32.h>
-#include <iostream>
+#include <locale>
+#include <codecvt>
 
 #include <vector>
 #include <map>
@@ -39,10 +40,12 @@ public:
 modifiedPage::modifiedPage(DWORD newProcessID, wchar_t* newModuleName, void* newPageBase, BYTE newSectionName[8], unsigned long long newSectionOffset)
 	: processID(newProcessID), moduleName(newModuleName), pageBase((unsigned long long)newPageBase), sectionName(L""), sectionOffset(newSectionOffset)
 {
-	wchar_t sectionNameCleaned[9];
-	memset(sectionNameCleaned, 0, 9 * sizeof(wchar_t));
-	wsprintf(sectionNameCleaned, L"%.8s", newSectionName);
-	sectionName.append(sectionNameCleaned);
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::wstring secName = std::wstring(converter.from_bytes((char*)newSectionName, (char*)&newSectionName[7]));
+	size_t nullPos = secName.find(L'\0');
+	if (nullPos != secName.npos)
+		secName = secName.substr(0, nullPos);
+ 	sectionName.append(secName);
 }
 
 BOOL EnableDebugPrivilege(BOOL bEnable)
@@ -272,12 +275,16 @@ int main()
 
 	printf("Scan took %dms\n", (end - start));
 
-	// Print some stats and the results.
-	printf("Scanned %d pages, ignored %d NX pages (total %d). Found %d modified pages.\n", stat.scannedPages, stat.ignoredPagesNX, stat.ignoredPagesNX + stat.scannedPages, stat.modifiedPages);
+	// Print some stats and the results. Each page is 4KB, so 256 pages is 1MB.
+	printf("Scanned %d pages (%d MB), ignored %d NX pages (%d MB), totalling %d pages  (%d MB). Found %d modified pages (%.02f MB).\n", 
+		stat.scannedPages, stat.scannedPages / 256,
+		stat.ignoredPagesNX, stat.scannedPages / 256,
+		stat.ignoredPagesNX + stat.scannedPages, (stat.ignoredPagesNX + stat.scannedPages) / 256,
+		stat.modifiedPages, ((float)stat.modifiedPages) / 256);
 	for (unsigned int n = 0; n < results.size(); n++)
 	{
 		modifiedPage thisModifiedPage = results[n];
-		printf("PID %04d module '%ls', section %S, offset 0x%08llux\n", thisModifiedPage.processID, thisModifiedPage.moduleName.c_str(), thisModifiedPage.sectionName.c_str(), thisModifiedPage.sectionOffset);
+		printf("PID %04d module '%ls', section %S, offset 0x%08llx\n", thisModifiedPage.processID, thisModifiedPage.moduleName.c_str(), thisModifiedPage.sectionName.c_str(), thisModifiedPage.sectionOffset);
 	/*
 		HANDLE toScanHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, thisModifiedPage.processID);
 		if (toScanHandle == NULL)
